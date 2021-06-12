@@ -2,6 +2,7 @@
 import App from './App';
 import { shallow, configure } from 'enzyme';
 import Adapter from '@wojtekmaj/enzyme-adapter-react-17';
+import ask from './Api';
 
 configure({ adapter: new Adapter() });
 
@@ -39,4 +40,21 @@ it('should display Internet Gods answer in both text and picture format', () => 
   const answer = wrapper.find('.answer');
   expect(answer.find('h1').text()).toBe('no');
   expect(answer.find('img').prop('src')).toBe('https://yesno.wtf/assets/no/0-b6d3e555af2c09094def76cf2fbddf46.gif');
+});
+
+describe('API Caller', () => {
+  it('should call YesNo API', () => {
+    const fetchSpy = jest.spyOn(global, 'fetch')
+      .mockImplementation(() => Promise.resolve({
+        json: () => { },
+      }));
+    //  Instead of making api call to external system
+    //  We use mockImplementation
+    //  It replaces behaviour of fetch with our customed implementation (for testing)
+
+    return ask()
+      .then(expect(fetchSpy).toHaveBeenCalledWith('https://yesno.wtf/api/'));
+  });
+
+  it('should return YesNo response in JSON format', () => { });
 });
