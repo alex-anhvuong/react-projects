@@ -1,0 +1,33 @@
+.Subway {
+    width: 100%;
+    margin: auto;
+    height: 250px;
+    /* overflow: scroll; */
+    text-align: center;
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+/* Tablet view */
+/* Portrait mode */
+@media (max-width: 500px) and (min-height: 400px) {
+    .Subway {
+        width: 400px;
+        height: 250px;
+    }
+}
+
+@media (min-width: 500px) and (min-height: 400px) {
+    .Subway {
+        width: 800px;
+        height: 350px;
+    }
+}
+
+/* Desktop view */
+@media (min-width: 1000px) and (min-height: 700px) {
+    .Subway {
+        width: 1000px;
+        height: 400px;
+    }
+}
