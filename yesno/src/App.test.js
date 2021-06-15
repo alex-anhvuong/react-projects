@@ -6,6 +6,8 @@ import ask from './Api';
 
 configure({ adapter: new Adapter() });
 
+jest.mock('./Api');
+
 // test('renders learn react link', () => {
 //   render(<App />);
 //   const linkElement = screen.getByText(/learn react/i);
@@ -29,17 +31,16 @@ it('should not display any answer by default', () => {
 
 it('should display Internet Gods answer in both text and picture format', () => {
   const wrapper = shallow(<App />);
-  wrapper.setState({
-    answer: {
-      answer: 'no',
-      forced: false,
-      image: 'https://yesno.wtf/assets/no/0-b6d3e555af2c09094def76cf2fbddf46.gif',
-    },
-  });
+  wrapper.find('button').simulate('click');
 
-  const answer = wrapper.find('.answer');
-  expect(answer.find('h1').text()).toBe('no');
-  expect(answer.find('img').prop('src')).toBe('https://yesno.wtf/assets/no/0-b6d3e555af2c09094def76cf2fbddf46.gif');
+  return Promise.resolve()
+    .then(() => {
+      wrapper.update();
+
+      const answer = wrapper.find('.answer');
+      expect(answer.find('h1').text()).toBe('no');
+      expect(answer.find('img').prop('src')).toBe('https://yesno.wtf/assets/no/0-b6d3e555af2c09094def76cf2fbddf46.gif');
+    });
 });
 
 describe('API Caller', () => {
@@ -53,8 +54,26 @@ describe('API Caller', () => {
     //  It replaces behaviour of fetch with our customed implementation (for testing)
 
     return ask()
-      .then(expect(fetchSpy).toHaveBeenCalledWith('https://yesno.wtf/api/'));
+      .then(() => {
+        expect(fetchSpy).toHaveBeenCalledWith('https://yesno.wtf/api/')
+      });
   });
 
-  it('should return YesNo response in JSON format', () => { });
+  it('should return YesNo response in JSON format', () => {
+    const fetchSpy = jest.spyOn(global, 'fetch')
+      .mockImplementation(() => Promise.resolve({
+        json: () => ({ foo: 'bar' }),
+      }));
+    //  Implement the fetch to return json
+
+    return ask()
+      .then(response => {
+        expect(response).toEqual({
+          answer: 'no',
+          forced: false,
+          image: 'https://yesno.wtf/assets/no/0-b6d3e555af2c09094def76cf2fbddf46.gif'
+        });
+      });
+  });
 });
+
